@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS: AIInsightSettings = {
 	googleAccessToken: '',
 	selectedAI: 'google', // Default to Google as per plan
 	insightType: 'summary',
-	geminiModel: 'gemini-1.5-flash'
+	geminiModel: 'gemini-pro'
 };
 
 export default class AIInsightPlugin extends Plugin {
