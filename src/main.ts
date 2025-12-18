@@ -147,7 +147,7 @@ export default class AIInsightPlugin extends Plugin {
 		}
 
 		// Progress Indicator Wrapper
-		const progressNotice = new Notice('Autio Review 시작...', 0);
+		const progressNotice = new Notice('Audio Review 시작...', 0);
 		const updateProgress = (message: string) => {
 			progressNotice.setMessage(message);
 		};
@@ -273,6 +273,9 @@ export default class AIInsightPlugin extends Plugin {
 	}
 
 	async callOpenAI(prompt: string): Promise<string> {
+		if (!this.settings.openaiApiKey) {
+			throw new Error('OpenAI API 키가 설정되지 않았습니다.');
+		}
 		const response = await axios.post('https://api.openai.com/v1/chat/completions', {
 			model: 'gpt-3.5-turbo',
 			messages: [{ role: 'user', content: prompt }]
@@ -286,6 +289,9 @@ export default class AIInsightPlugin extends Plugin {
 	}
 
 	async callAnthropic(prompt: string): Promise<string> {
+		if (!this.settings.anthropicApiKey) {
+			throw new Error('Anthropic API 키가 설정되지 않았습니다.');
+		}
 		const response = await axios.post('https://api.anthropic.com/v1/messages', {
 			model: 'claude-3-haiku-20240307',
 			max_tokens: 1000,
@@ -301,6 +307,9 @@ export default class AIInsightPlugin extends Plugin {
 	}
 
 	async callGoogle(prompt: string): Promise<string> {
+		if (!this.settings.googleApiKey) {
+			throw new Error('Google API 키가 설정되지 않았습니다.');
+		}
 		// Use configurable model, default to gemini-1.5-flash
 		const model = this.settings.geminiModel || 'gemini-1.5-flash';
 		const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.settings.googleApiKey}`, {
