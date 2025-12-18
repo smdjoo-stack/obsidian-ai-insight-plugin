@@ -337,6 +337,11 @@ class AIInsightSettingTab extends PluginSettingTab {
 
 		containerEl.createEl('h2', { text: 'AI Insight & Audio Review Settings' });
 
+		// Introduction
+		containerEl.createEl('p', { 
+			text: '이 플러그인을 사용하려면 아래의 API 키들을 설정하세요. 각 서비스의 웹사이트에서 키를 발급받을 수 있습니다.' 
+		});
+
 		// --- AI Selection ---
 		new Setting(containerEl)
 			.setName('기본 AI 서비스')
@@ -351,12 +356,26 @@ class AIInsightSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		new Setting(containerEl)
+			.setName('인사이트 유형')
+			.setDesc('생성할 인사이트의 유형을 선택하세요')
+			.addDropdown(dropdown => dropdown
+				.addOption('summary', '요약')
+				.addOption('key-points', '주요 포인트')
+				.addOption('questions', '관련 질문')
+				.addOption('action-items', '액션 아이템')
+				.setValue(this.plugin.settings.insightType)
+				.onChange(async (value: string) => {
+					this.plugin.settings.insightType = value as 'summary' | 'key-points' | 'questions' | 'action-items';
+					await this.plugin.saveSettings();
+				}));
+
 		// --- API Keys Section ---
 		containerEl.createEl('h3', { text: 'API Keys' });
 
 		new Setting(containerEl)
 			.setName('Gemini API Key')
-			.setDesc('Google AI Studio에서 발급받은 키 (Audio Review 스크립트 생성에 필수)')
+			.setDesc('Google AI Studio (https://makersuite.google.com/app/apikey)에서 발급받은 키. 인사이트 생성과 오디오 스크립트에 필수입니다.')
 			.addText(text => text
 				.setPlaceholder('AIza...')
 				.setValue(this.plugin.settings.googleApiKey)
@@ -367,7 +386,7 @@ class AIInsightSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Gemini Model Name')
-			.setDesc('사용할 Gemini 모델명 (예: gemini-1.5-flash)')
+			.setDesc('사용할 Gemini 모델명 (기본: gemini-1.5-flash). 다른 모델을 사용하려면 입력하세요.')
 			.addText(text => text
 				.setPlaceholder('gemini-1.5-flash')
 				.setValue(this.plugin.settings.geminiModel)
@@ -378,7 +397,7 @@ class AIInsightSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('OpenAI API Key')
-			.setDesc('ChatGPT 사용 시 필요')
+			.setDesc('OpenAI 플랫폼 (https://platform.openai.com/api-keys)에서 발급받은 키. ChatGPT 사용 시 필요합니다.')
 			.addText(text => text
 				.setPlaceholder('sk-...')
 				.setValue(this.plugin.settings.openaiApiKey)
@@ -389,7 +408,7 @@ class AIInsightSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Anthropic API Key')
-			.setDesc('Claude 사용 시 필요')
+			.setDesc('Anthropic 콘솔 (https://console.anthropic.com/)에서 발급받은 키. Claude 사용 시 필요합니다.')
 			.addText(text => text
 				.setPlaceholder('sk-ant-...')
 				.setValue(this.plugin.settings.anthropicApiKey)
@@ -399,11 +418,15 @@ class AIInsightSettingTab extends PluginSettingTab {
 				}));
 
 		// --- Audio Review Settings ---
-		containerEl.createEl('h3', { text: 'Audio Review Settings (ElevenLabs & Drive)' });
+		containerEl.createEl('h3', { text: 'Audio Review Settings' });
+
+		containerEl.createEl('p', { 
+			text: '오디오 리뷰 기능을 사용하려면 ElevenLabs와 Google Drive API 키가 필요합니다.' 
+		});
 
 		new Setting(containerEl)
 			.setName('ElevenLabs API Key')
-			.setDesc('음성 합성을 위한 ElevenLabs API 키')
+			.setDesc('ElevenLabs 대시보드 (https://elevenlabs.io/app/profile)에서 발급받은 키. 음성 합성에 사용됩니다.')
 			.addText(text => text
 				.setPlaceholder('xi-...')
 				.setValue(this.plugin.settings.elevenLabsApiKey)
@@ -414,7 +437,7 @@ class AIInsightSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('ElevenLabs Voice ID')
-			.setDesc('사용할 목소리의 Voice ID')
+			.setDesc('ElevenLabs에서 선택한 목소리의 Voice ID. Voices 페이지에서 확인할 수 있습니다.')
 			.addText(text => text
 				.setPlaceholder('예: 21m00Tcm4TlvDq8ikWAM')
 				.setValue(this.plugin.settings.elevenLabsVoiceId)
@@ -425,7 +448,7 @@ class AIInsightSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Google Drive Access Token')
-			.setDesc('오디오 파일 업로드를 위한 Google OAuth Access Token (Bearer 제외)')
+			.setDesc('Google OAuth 2.0 Access Token. Google Cloud Console에서 설정하고 토큰을 발급받으세요. (Bearer 제외)')
 			.addText(text => text
 				.setPlaceholder('ya29.a0...')
 				.setValue(this.plugin.settings.googleAccessToken)
@@ -433,5 +456,10 @@ class AIInsightSettingTab extends PluginSettingTab {
 					this.plugin.settings.googleAccessToken = value;
 					await this.plugin.saveSettings();
 				}));
+
+		// Footer
+		containerEl.createEl('p', { 
+			text: '설정이 완료되면 명령 팔레트에서 "Generate Insight" 또는 "Generate Audio Review"를 실행하세요.' 
+		});
 	}
 }
